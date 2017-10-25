@@ -2,12 +2,16 @@ package validator
 
 import (
 	"net/http"
+	"reflect"
+	"strings"
 )
 
+//定义校验规则
 const (
 	Accepted           = "accepted"
 	ActiveURL          = "active_url"
 	After              = "after"
+	Alpha              = "alpha"
 	AlphaDash          = "alpha_dash"
 	AlphaNum           = "alpha_num"
 	Array              = "array"
@@ -53,34 +57,45 @@ type Validator struct {
 	r       *http.Request
 	rule    map[string]string
 	message map[string]string
-	err     ValidatorError
+	err     map[string][]string
 }
 
-//ValidatorError：存储错误
-type ValidatorError struct {
-	err map[string][]string
-}
-
-//获取错误的第一个验证错误信息
-func (err *ValidatorError) First() {
+//First 获取错误的第一个验证错误信息
+func (v *Validator) First() {
 	//TODO:获取校验参数的第一个错误信息
 }
 
-func (err *ValidatorError) All() {
+//All 获取所有的错误信息
+func (v *Validator) All() {
 	//TODO:获取所有的错误信息
 }
 
-//执行数据校验
+//Run 执行数据校验
 func (v *Validator) Run() {
 	//解析请求
 	v.r.ParseForm()
-	for filed, ruleStr := v.rule var {
-		
+	for field, ruleStr := range v.rule {
+		value := v.r.FormValue(field)
+		rules := strings.Split(strings.Trim(ruleStr, ""), "|")
+		v.subRuleValidator(value, field, rules)
 	}
 }
 
 //拆分对应的校验规则
-func (v *Validator) rules(filed, rules string) {
-	var error ValidatorError
+func (v *Validator) subRuleValidator(value interface{}, filed string, rules []string) {
+	for _, rule := range rules {
+		switch rule {
+		case Accepted:
+		case ActiveURL:
+		case Alpha:
+		}
+	}
+}
 
+//validatorAccepted 校验是否同意的布尔值
+func (v *Validator) validatorAccepted(field string, value interface{}) {
+	re := reflect.TypeOf(value).Kind()
+	if re != reflect.Bool {
+		v.err[field] = append(v.err[field], "the "+field+" type must be bool")
+	}
 }
