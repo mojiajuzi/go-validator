@@ -1,6 +1,9 @@
 package validator
 
 import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"net/http"
 	"reflect"
 	"strings"
@@ -54,10 +57,11 @@ const (
 
 //Validator数据校验的对象
 type Validator struct {
-	r       *http.Request
-	rule    map[string]string
-	message map[string]string
-	err     map[string][]string
+	r                *http.Request
+	rule             map[string]string
+	message          map[string]string
+	err              map[string][]string
+	errConfigMessage map[string]map[string]interface{}
 }
 
 //First 获取错误的第一个验证错误信息
@@ -74,10 +78,25 @@ func (v *Validator) All() {
 func (v *Validator) Run() {
 	//解析请求
 	v.r.ParseForm()
+	//加载文件替换信息
+
 	for field, ruleStr := range v.rule {
 		value := v.r.FormValue(field)
 		rules := strings.Split(strings.Trim(ruleStr, ""), "|")
 		v.subRuleValidator(value, field, rules)
+	}
+}
+
+//loadConfigErrorMessage 加载错误配置信息
+func (v *Validator) loadConfigErrorMessage(lang string) {
+	//TODO:错误信息信息处理
+	f, err := ioutil.ReadFile("data.json")
+	if err != nil {
+		fmt.Println("load config gile error")
+	}
+	err = json.Unmarshal(f, &v.errConfigMessage)
+	if err != nil {
+		fmt.Println(err.Error())
 	}
 }
 
