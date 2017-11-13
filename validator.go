@@ -18,7 +18,7 @@ const (
 	AlphaDash          = "alpha_dash"
 	AlphaNum           = "alpha_num"
 	Array              = "array"
-	Befor              = "befor"
+	Before             = "before"
 	Between            = "between"
 	Boolean            = "boolean"
 	Confirmed          = "confirmed"
